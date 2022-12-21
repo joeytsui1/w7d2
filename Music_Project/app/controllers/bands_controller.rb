@@ -1,27 +1,41 @@
 class BandsController < ApplicationController
-    before_action :set_band
+    # before_action :set_band
 
-    def set_band
-        @band = Band.find(params[:id])
-    end
+    # def set_band
+    #     @band = Band.find(params[:id])
+    # end
 
     def index
         @bands = Band.all
-        render json: @bands
+        render :index
     end
 
+    def new
+        @band = Band.new
+        render :new
+    end
+
+    def create
+        @band = Band.new(band_params)
+        if @band.save
+            redirect_to bands_url
+        else
+            redirect_to new_band_url
+        end
+    end
     def show
-        set_band
+        @band = Band.find(params[:id])
         render :show
     end
 
     def edit
-        set_band
+        @band = Band.find(params[:id])
         render :edit
     end
 
     def update
-        if set_band.update(band_params)
+        @band = Band.find(params[:id])
+        if @band.update(band_params)
             redirect_to band_url(set_band)
         else
             redirect_to edit_band_url
@@ -29,13 +43,14 @@ class BandsController < ApplicationController
     end
 
     def destroy
-        set_band.destroy
+        @band = Band.find(params[:id])
+        @band.destroy
         redirect_to bands_url
     end
 
     private
 
     def band_params
-        params.require(:band).require(:name)
+        params.require(:band).permit(:name)
     end
 end
